@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using MyBook.DataAccess.Data;
 using MyBook.DataAccess.Repository;
 using MyBook.DataAccess.Repository.IRepository;
+using MyBook.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,10 +36,12 @@ namespace MyBook
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddScoped<IUnitofWork, UnitofWork>(); 
+            services.AddRazorPages();
             
         }
 
