@@ -40,9 +40,31 @@ namespace MyBook
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
             services.AddScoped<IUnitofWork, UnitofWork>(); 
             services.AddRazorPages();
-            
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/Identity/Account/Login";
+                options.LogoutPath = $"/Identity/Account/Logout";
+                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
+            services.AddAuthentication().AddFacebook(options =>
+            {
+                options.AppId = "707314636974215";
+                options.AppSecret = "0f4e6a71d546ab0e1770dd846925dbb1";
+            });
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = "15438009228-fa82fp45ni4qt38mee1p4vr5k5ekn1i4.apps.googleusercontent.com";
+                options.ClientSecret = "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";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,7 +85,7 @@ namespace MyBook
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

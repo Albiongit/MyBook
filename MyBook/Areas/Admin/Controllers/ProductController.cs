@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyBook.DataAccess.Repository.IRepository;
 using MyBook.Models;
 using MyBook.Models.ViewModels;
+using MyBook.Utility;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,6 +13,7 @@ using System.Linq;
 namespace MyBook.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitofWork _unitOfWork;

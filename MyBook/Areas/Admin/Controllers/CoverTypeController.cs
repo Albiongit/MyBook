@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyBook.DataAccess.Repository.IRepository;
 using MyBook.Models;
@@ -7,6 +8,7 @@ using MyBook.Utility;
 namespace MyBook.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CoverTypeController : Controller
     {
         private readonly IUnitofWork _unitOfWork;

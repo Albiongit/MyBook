@@ -69,7 +69,9 @@
                     <label asp-for="Input.CompanyId"></label>
                     @Html.DropDownListFor(m => m.Input.CompanyId, Model.Input.CompanyList, "-Please select a company", new { @class="form-control"})
                 </div>
+                <br />
             }
+
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
