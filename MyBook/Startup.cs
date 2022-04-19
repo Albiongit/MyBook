@@ -12,6 +12,7 @@ using MyBook.DataAccess.Data;
 using MyBook.DataAccess.Repository;
 using MyBook.DataAccess.Repository.IRepository;
 using MyBook.Utility;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace MyBook
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOptions>(Configuration);
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddScoped<IUnitofWork, UnitofWork>(); 
             services.AddRazorPages();
             services.AddSession(options =>
@@ -85,6 +87,7 @@ namespace MyBook
             app.UseStaticFiles();
 
             app.UseRouting();
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
             app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
