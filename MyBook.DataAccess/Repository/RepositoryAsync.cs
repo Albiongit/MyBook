@@ -10,29 +10,29 @@ using System.Threading.Tasks;
 
 namespace MyBook.DataAccess.Repository
 {
-    public class RepositoryAsync<T> : IRepositoryAsync<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext _db;
         internal DbSet<T> dbSet;
 
-        public RepositoryAsync(ApplicationDbContext db)
+        public Repository(ApplicationDbContext db)
         {
             _db = db;
             this.dbSet = _db.Set<T>();
         }
 
 
-        public async Task AddAsync(T entity)
+        public void Add(T entity)
         {
-            await dbSet.AddAsync(entity);
+            dbSet.Add(entity);
         }
 
-        public async Task<T> GetAsync(int id)
+        public T Get(int id)
         {
-            return await dbSet.FindAsync(id);
+            return dbSet.Find(id);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
@@ -50,13 +50,13 @@ namespace MyBook.DataAccess.Repository
 
             if(orderBy != null)
             {
-                return await orderBy(query).ToListAsync();
+                return orderBy(query).ToList();
             }
 
-            return await query.ToListAsync();
+            return query.ToList();
         }
 
-        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter = null, string includeProperties = null)
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter = null, string includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
@@ -73,21 +73,21 @@ namespace MyBook.DataAccess.Repository
             }
 
           
-            return await query.FirstOrDefaultAsync();
+            return query.FirstOrDefault();
         }
 
-        public async Task RemoveAsync(int id)
+        public void Remove(int id)
         {
-            T entity = await dbSet.FindAsync(id);
-            await RemoveAsync(entity);
+            T entity = dbSet.Find(id);
+            Remove(entity);
         }
 
-        public async Task RemoveAsync(T entity)
+        public void Remove(T entity)
         {
             dbSet.Remove(entity);
         }
 
-        public async Task RemoveRangeAsync(IEnumerable<T> entity)
+        public void RemoveRange(IEnumerable<T> entity)
         {
             dbSet.RemoveRange(entity);
         }

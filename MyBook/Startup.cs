@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +43,11 @@ namespace MyBook
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOptions>(Configuration);
-            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+            services.AddSingleton<ITempDataProvider,CookieTempDataProvider>();
+            services.Configure<BrainTreeSettingsx>(Configuration.GetSection("Stripe"));
+            services.Configure<BrainTreeSettingsx>(Configuration.GetSection("BrainTree"));
+            services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
+            services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
             services.AddScoped<IUnitofWork, UnitofWork>(); 
             services.AddRazorPages();
             services.AddSession(options =>

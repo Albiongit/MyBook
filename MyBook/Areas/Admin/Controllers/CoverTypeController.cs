@@ -96,6 +96,7 @@ namespace MyBook.Areas.Admin.Controllers
 
             if (objFromDb == null)
             {
+                TempData["Success"] = "Error deleting CoverType";
                 return Json(new { success = false, message = "Error while deleting" });
             }
             else
@@ -103,6 +104,8 @@ namespace MyBook.Areas.Admin.Controllers
                 _unitOfWork.SP_Call.Execute(SD.Proc_CoverType_Delete, parameter);
                // _unitOfWork.CoverType.Remove(objFromDb);
                 _unitOfWork.Save();
+
+                TempData["Success"] = "CoverType successfully deleted";
                 return Json(new { success = true, message = "Delete Successful" });
             }
         }

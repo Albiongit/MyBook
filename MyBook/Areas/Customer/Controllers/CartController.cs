@@ -15,6 +15,9 @@ using System;
 using System.Collections.Generic;
 using MyBook.Models;
 using Stripe;
+using Microsoft.Extensions.Options;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace MyBook.Areas.Customer.Controllers
 {
@@ -23,16 +26,20 @@ namespace MyBook.Areas.Customer.Controllers
     {
         private readonly IUnitofWork _unitofWork;
         private readonly IEmailSender _emailSender;
+
+        private TwilioSettings _twilioOptions { get; set; }
         private readonly UserManager<IdentityUser> _userManager;
 
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
-        public CartController(IUnitofWork unitofWork, IEmailSender emailSender, UserManager<IdentityUser> userManager)
+        public CartController(IUnitofWork unitofWork, IEmailSender emailSender, 
+                                UserManager<IdentityUser> userManager, IOptions<TwilioSettings> twilioOptions)
         {
             _unitofWork = unitofWork;
             _emailSender = emailSender;
             _userManager = userManager;
+            _twilioOptions = twilioOptions.Value;
         }
         
         public IActionResult Index()
@@ -191,8 +198,8 @@ namespace MyBook.Areas.Customer.Controllers
 
             _unitofWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
             _unitofWork.Save();
+             
 
-            List<OrderDetails> orderDetailsList = new List<OrderDetails>();
             foreach(var item in ShoppingCartVM.ListCart)
             {
                 item.Price = SD.GetPriceBasedOnQuantity(item.Count, item.Product.Price, item.Product.Price50, item.Product.Price100);
@@ -231,13 +238,13 @@ namespace MyBook.Areas.Customer.Controllers
                 var service = new ChargeService();
                 Charge charge = service.Create(options);
 
-                if(charge.BalanceTransactionId == null)
+                if(charge.Id == null)
                 {
                     ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
                 }
                 else
                 {
-                   ShoppingCartVM.OrderHeader.TransactionId = charge.BalanceTransactionId;
+                   ShoppingCartVM.OrderHeader.TransactionId = charge.Id;
                 }
 
                 if(charge.Status.ToLower() == "succeeded")
@@ -257,6 +264,19 @@ namespace MyBook.Areas.Customer.Controllers
 
         public IActionResult OrderConfirmation(int id)
         {
+            OrderHeader orderHeader = _unitofWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
+            TwilioClient.Init(_twilioOptions.AccountSid, _twilioOptions.AuthToken);
+            try
+            {
+                var message = MessageResource.Create(
+                    body: "Order placed on MyBook. Your Order ID : " + id,
+                    from: new Twilio.Types.PhoneNumber(_twilioOptions.PhoneNumber),
+                    to: new Twilio.Types.PhoneNumber(orderHeader.PhoneNumber)
+                    );
+            }
+            catch(Exception ex)
+            {
+            }
 
             return View(id);
         }
