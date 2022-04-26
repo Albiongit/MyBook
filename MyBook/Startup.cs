@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyBook.DataAccess.Data;
+using MyBook.DataAccess.Initializer;
 using MyBook.DataAccess.Repository;
 using MyBook.DataAccess.Repository.IRepository;
 using MyBook.Utility;
@@ -48,7 +49,8 @@ namespace MyBook
             services.Configure<BrainTreeSettingsx>(Configuration.GetSection("BrainTree"));
             services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
             services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
-            services.AddScoped<IUnitofWork, UnitofWork>(); 
+            services.AddScoped<IUnitofWork, UnitofWork>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddRazorPages();
             services.AddSession(options =>
             {
@@ -75,7 +77,7 @@ namespace MyBook
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -96,6 +98,7 @@ namespace MyBook
             app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
+            dbInitializer.Initialize();
 
             app.UseEndpoints(endpoints =>
             {
