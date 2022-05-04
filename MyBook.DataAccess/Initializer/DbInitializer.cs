@@ -49,7 +49,7 @@ namespace MyBook.DataAccess.Initializer
             _userManager.CreateAsync(new ApplicationUser
             {
                 UserName = "admin@gmail.com",
-                Email = "Admin@gmail.com",
+                Email = "admin@gmail.com",
                 EmailConfirmed = true,
                 Name = "Albion Ademi"
             }, "Admin123*").GetAwaiter().GetResult();

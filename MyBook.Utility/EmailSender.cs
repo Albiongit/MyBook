@@ -19,20 +19,42 @@ namespace MyBook.Utility
         {
             emailOptions = options.Value;
         }
-        public Task SendEmailAsync(string email, string subject, string htmlMessage)
+
+        // For user register
+        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            return Execute(emailOptions.SendGridKey, subject, htmlMessage, email);
+            await Execute(emailOptions.SendGridKey, subject, htmlMessage, email);
 
         }
 
-        private Task Execute(string sendGridKey, string subject, string message, string email)
-        {
+        
 
-            var client = new SendGridClient(sendGridKey);
-            var from = new EmailAddress("admin@mybook.com", "My Book");
-            var to = new EmailAddress(email, "End User");
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", message);
-            return  client.SendEmailAsync(msg);
+        private async Task Execute(string sendGridKey, string subject, string message, string email)
+        {
+            //string name = email.Substring(0, email.IndexOf('.') + 1);
+            //if (name.Contains("@"))
+            //{
+            //    name = email.Substring(0, email.IndexOf('@') + 1);
+            //}
+
+            if (subject != "Confirm your email")
+            {
+                var client = new SendGridClient(sendGridKey);
+                var from = new EmailAddress("albionademi5@gmail.com", "From " + email + " to ");
+                var to = new EmailAddress("albionademi5@gmail.com", "End User");
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", message);
+                var response = await client.SendEmailAsync(msg);
+            }
+            else
+            {
+                var client = new SendGridClient(sendGridKey);
+                var from = new EmailAddress("albionademi5@gmail.com", "My Book");
+                var to = new EmailAddress(email, "End User");
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", message);
+                var response = await client.SendEmailAsync(msg);
+            }
+            
         }
+
     }
 }

@@ -45,7 +45,7 @@ namespace MyBook
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOptions>(Configuration);
             services.AddSingleton<ITempDataProvider,CookieTempDataProvider>();
-            services.Configure<BrainTreeSettingsx>(Configuration.GetSection("Stripe"));
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.Configure<BrainTreeSettingsx>(Configuration.GetSection("BrainTree"));
             services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
             services.AddSingleton<IBrainTreeGate, BrainTreeGate>();

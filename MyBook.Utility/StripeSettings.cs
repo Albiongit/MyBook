@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyBook.Utility
 {
-    public class BrainTreeSettings
+    public class StripeSettings
     {
         public string SecretKey { get; set; }
         public string PublishableKey { get; set; }

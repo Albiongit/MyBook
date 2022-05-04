@@ -189,7 +189,8 @@ namespace MyBook.Areas.Identity.Pages.Account
                         callbackUrl
                         );
 
-                    await _emailSender.SendEmailAsync(user.Email, "Confirm your email", messageBody);
+                    await _emailSender
+                        .SendEmailAsync(user.Email, "Confirm your email", messageBody);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyBook.DataAccess.Repository.IRepository;
@@ -20,11 +21,15 @@ namespace MyBook.Areas.Customer.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitofWork _unitOfWork;
+        private readonly IEmailSender _emailSender;
 
-        public HomeController(ILogger<HomeController> logger, IUnitofWork unitofWork)
+        public HomeController(ILogger<HomeController> logger, 
+                              IUnitofWork unitofWork,
+                              IEmailSender emailSender)
         {
             _logger = logger;
             _unitOfWork = unitofWork;
+            _emailSender = emailSender;
         }
 
         public IActionResult Index()
@@ -111,6 +116,42 @@ namespace MyBook.Areas.Customer.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Contact(Contact Contact)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new Contact
+                {
+                    Name = Contact.Name,
+                    Email = Contact.Email,
+                    Subject = Contact.Subject,
+                    Message = Contact.Message,
+                    PhoneNumber = Contact.PhoneNumber
+                };
+
+
+                 
+                await _emailSender.SendEmailAsync(user.Email, user.Subject + " - " + user.Name, user.Message);
+
+                return RedirectToAction("EmailConfirmation", "Home");
+            }
+
+
+            return View();
+        }
+
+        public IActionResult EmailConfirmation()
         {
             return View();
         }
